@@ -80,5 +80,15 @@
                                                        &trans       &trans             &trans       &trans
             >;
         };
+
+        // Layer 5: Blank Layer
+        blank_layer {
+            bindings = <
+                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
+                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
+                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
+                                                       &trans       &trans             &trans       &trans
+            >;
+        };
     };
 };
