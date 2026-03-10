@@ -1,0 +1,20 @@
+if SHIELD_SIMPLE34_TEST_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "Simple34 Test Left"
+
+endif
+
+if SHIELD_SIMPLE34_TEST_RIGHT
+
+config ZMK_KEYBOARD_NAME
+    default "Simple34 Test Right"
+
+endif
+
+if SHIELD_SIMPLE34_TEST_LEFT || SHIELD_SIMPLE34_TEST_RIGHT
+
+config ZMK_BLE
+    default y
+
+endif
