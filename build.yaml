@@ -28,8 +28,4 @@ include:
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
   - board: nice_nano
-    shield: simple34_test_left
-  - board: nice_nano
-    shield: simple34_test_right
-  - board: nice_nano
     shield: settings_reset
