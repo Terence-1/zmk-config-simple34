@@ -41,12 +41,12 @@
     keymap {
         compatible = "zmk,keymap";
 
-        // Layer 0: Base Layer with Homerow Mods
+        // Layer 0: Base Layer (Colemak-DH) with Homerow Mods
         default_layer {
             bindings = <
-                &td_q        &kp W        &kp E        &kp R        &kp T              &kp Y        &kp U        &kp I        &kp O        &kp P
-                &mt LGUI A   &mt LALT S   &mt LCTRL D  &mt LSHFT F  &kp G              &kp H        &mt RSHFT J  &mt RCTRL K  &mt RALT L   &mt RGUI SEMI
-                &kp Z        &kp X        &kp C        &kp V        &kp B              &kp N        &kp M        &kp COMMA    &kp DOT      &kp FSLH
+                &td_q        &kp W        &kp F        &kp P        &kp B              &kp J        &kp L        &kp U        &kp Y        &kp SEMI
+                &mt LGUI A   &mt LALT R   &mt LCTRL S  &mt LSHFT T  &kp G              &kp M        &mt RSHFT N  &mt RCTRL E  &mt RALT I   &mt RGUI O
+                &kp Z        &kp X        &kp C        &kp D        &kp V              &kp K        &kp H        &kp COMMA    &kp DOT      &kp FSLH
                                                        &lt 1 SPACE  &lt 2 TAB          &lt 3 RET    &lt 4 BSPC
             >;
         };
@@ -86,16 +86,6 @@
             bindings = <
                 &kp C_PREV   &kp C_PP     &kp C_NEXT   &kp C_STOP   &trans             &trans       &trans       &trans       &trans       &trans
                 &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP &kp C_BRI_DN &kp C_BRI_UP       &trans       &trans       &trans       &trans       &trans
-                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
-                                                       &trans       &trans             &trans       &trans
-            >;
-        };
-
-        // Layer 5: Blank Layer
-        blank_layer {
-            bindings = <
-                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
-                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
                 &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
                                                        &trans       &trans             &trans       &trans
             >;
