@@ -3,52 +3,25 @@
 / {
     keys {
         compatible = "gpio-keys";
+        /* Slide switch: P1 & P2 on VCC, P3 on GPIO
+         * Switch ON: P3 connected to VCC -> HIGH -> awake
+         * Switch OFF: P3 floating -> LOW (pull-down) -> soft-off
+         */
         soft_off_gpio_key: soft_off_gpio_key {
             gpios = <&pro_micro 3 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
-        wakeup_key: wakeup_key {
-            gpios = <&pro_micro 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
-        };
     };
 
-    behaviors {
-        hw_soft_off: hw_soft_off {
-            compatible = "zmk,behavior-soft-off";
-            #binding-cells = <0>;
-            hold-time-ms = <0>;
-            split-peripheral-off-on-press;
-        };
-    };
-
-    soft_off_direct_scan: soft_off_direct_scan {
-        compatible = "zmk,kscan-gpio-direct";
-        input-keys = <&soft_off_gpio_key>;
-        wakeup-source;
-        debounce-press-ms = <0>;
-        debounce-release-ms = <0>;
-    };
-
-    side_band_behavior_triggers: side_band_behavior_triggers {
-        compatible = "zmk,kscan-sideband-behaviors";
-        kscan = <&soft_off_direct_scan>;
-        auto-enable;
-
-        soft_off {
-            column = <0>;
-            row = <0>;
-            bindings = <&hw_soft_off>;
-        };
-    };
-
-    wakeup_trigger: wakeup_trigger {
+    wakeup_source: wakeup_source {
         compatible = "zmk,gpio-key-wakeup-trigger";
-        trigger = <&wakeup_key>;
+        trigger = <&soft_off_gpio_key>;
         wakeup-source;
+        extra-gpios = <&pro_micro 3 GPIO_ACTIVE_HIGH>;
     };
 
     soft_off_wakers {
         compatible = "zmk,soft-off-wakeup-sources";
-        wakeup-sources = <&wakeup_trigger &soft_off_direct_scan>;
+        wakeup-sources = <&wakeup_source>;
     };
 };
 
