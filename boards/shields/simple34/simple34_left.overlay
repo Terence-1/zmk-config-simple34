@@ -13,6 +13,7 @@
             compatible = "zmk,behavior-soft-off";
             #binding-cells = <0>;
             hold-time-ms = <0>;
+            split-peripheral-off-on-press;
         };
     };
 
