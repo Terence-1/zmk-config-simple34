@@ -10,24 +10,20 @@
         soft_off_gpio_key: soft_off_gpio_key {
             gpios = <&pro_micro 3 (GPIO_ACTIVE_LOW | GPIO_PULL_DOWN)>;
         };
-    };
-
-    soft_off_direct_scan: soft_off_direct_scan {
-        compatible = "zmk,kscan-gpio-direct";
-        input-keys = <&soft_off_gpio_key>;
-        wakeup-source;
+        wakeup_key: wakeup_key {
+            gpios = <&pro_micro 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+        };
     };
 
     wakeup_source: wakeup_source {
         compatible = "zmk,gpio-key-wakeup-trigger";
-        trigger = <&soft_off_gpio_key>;
+        trigger = <&wakeup_key>;
         wakeup-source;
-        extra-gpios = <&pro_micro 3 GPIO_ACTIVE_HIGH>;
     };
 
     soft_off_wakers {
         compatible = "zmk,soft-off-wakeup-sources";
-        wakeup-sources = <&wakeup_source &soft_off_direct_scan>;
+        wakeup-sources = <&wakeup_source>;
     };
 };
 
