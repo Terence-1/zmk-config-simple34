@@ -25,8 +25,6 @@
         compatible = "zmk,kscan-gpio-direct";
         input-keys = <&soft_off_gpio_key>;
         wakeup-source;
-        debounce-press-ms = <20>;
-        debounce-release-ms = <20>;
     };
 
     side_band_behavior_triggers: side_band_behavior_triggers {
