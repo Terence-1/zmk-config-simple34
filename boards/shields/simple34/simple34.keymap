@@ -49,7 +49,7 @@
             key-positions = <0 1>;
             binding = <&tog 5>;
             layers = <0>;
-        }
+        };
     };
 
     keymap {
