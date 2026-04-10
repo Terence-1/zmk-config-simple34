@@ -6,15 +6,10 @@ manifest:
       url-base: https://github.com/zmkfirmware
     - name: dnaq
       url-base: https://github.com/dnaq
-    - name: Terence-1
-      url-base: https://github.com/Terence-1
   projects:
     - name: zmk
       remote: dnaq
       revision: plover-hid-hog-attempt
       import: app/west.yml
-    - name: zmk-usb-reporting
-      remote: Terence-1
-      revision: main
   self:
     path: config
