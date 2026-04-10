@@ -41,14 +41,14 @@
         enter_steno {
             timeout-ms = <50>;
             key-positions = <30 31>;
-            binding = <&tog 5>;
+            bindings = <&tog 5>;
             layers = <0>;
         };
         exit_setno {
             timeout-ms = <50>;
             key-positions = <0 1>;
-            binding = <&tog 5>;
-            layers = <0>;
+            bindings = <&tog 5>;
+            layers = <5>;
         };
     };
 
