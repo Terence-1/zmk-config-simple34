@@ -93,12 +93,12 @@
         };
 
         // Layer 5: Blank Layer
-        blank_layer {
+        steno_layer {
             bindings = <
-                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
-                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
-                &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &trans
-                                                       &trans       &trans             &trans       &trans
+                &kp N1       &kp N2       &kp N3       &kp N4       &kp N5             &kp N6       &kp N7       &kp N8       &kp N9       &kp N0
+                &kp Q        &kp W        &kp E        &kp R        &kp T              &kp U        &kp I        &kp O        &kp P        &kp LBKT
+                &kp A        &kp S        &kp D        &kp F        &kp G              &kp K        &kp K        &kp L        &kp ;        &kp APOS
+                                                       &kp C        &kp V              &kp N        &kp M
             >;
         };
     };
