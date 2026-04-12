@@ -1,7 +1,6 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/mouse.h>
-
 / {
     behaviors {
         td_q: tap_dance_q {
@@ -10,7 +9,6 @@
             tapping-term-ms = <200>;
             bindings = <&kp Q>, <&kp ESC>;
         };
-
         mt: mod_tap {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -19,7 +17,6 @@
             quick-tap-ms = <175>;
             bindings = <&kp>, <&kp>;
         };
-
         lt: layer_tap {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -29,7 +26,6 @@
             bindings = <&mo>, <&kp>;
         };
     };
-
     combos {
         compatible = "zmk,combos";
         combo_capslock {
@@ -38,80 +34,67 @@
             bindings = <&kp CAPS>;
             layers = <0>;
         };
-        enter_steno {
+        toggle_norman {
             timeout-ms = <50>;
             key-positions = <30 31>;
             bindings = <&tog 5>;
-            layers = <0>;
-        };
-        exit_setno {
-            timeout-ms = <50>;
-            key-positions = <0 1>;
-            bindings = <&tog 5>;
-            layers = <5>;
+            layers = <0 5>;
         };
     };
-
     keymap {
         compatible = "zmk,keymap";
-
-        // Layer 0: Base Layer with Homerow Mods (Norman alpha layout)
+        // Layer 0: Base Layer - QWERTY
         default_layer {
-            bindings = <
-		&td_q        &kp W        &kp D        &kp F        &kp K              &kp J        &kp U        &kp R        &kp L        &kp SEMI
-		&mt LGUI A   &mt LALT S   &mt LCTRL E  &mt LSHFT T  &kp G              &kp Y        &mt RSHFT N  &mt RCTRL I  &mt LALT O   &mt RGUI H
-		&kp Z        &kp X        &kp C        &kp V        &kp B              &kp P        &kp M        &kp COMMA    &kp DOT      &kp FSLH
-	                                                       &lt 1 SPACE  &lt 2 TAB          &lt 3 RET    &lt 4 BSPC
+            bindings = 
+                &td_q        &kp W        &kp E        &kp R        &kp T              &kp Y        &kp U        &kp I        &kp O        &kp P
+                &mt LGUI A   &mt LALT S   &mt LCTRL D  &mt LSHFT F  &kp G              &kp H        &mt RSHFT J  &mt RCTRL K  &mt LALT L   &mt RGUI SEMI
+                &kp Z        &kp X        &kp C        &kp V        &kp B              &kp N        &kp M        &kp COMMA    &kp DOT      &kp FSLH
+                                                       &lt 1 SPACE  &lt 2 TAB          &lt 3 RET    &lt 4 BSPC
             >;
         };
-
         // Layer 1: Numbers & Symbols
         lower_layer {
-            bindings = <
+            bindings = 
                 &kp N1       &kp N2       &kp N3       &kp N4       &kp N5             &kp N6       &kp N7       &kp N8       &kp N9       &kp N0
                 &kp GRAVE    &kp MINUS    &kp EQUAL    &kp LBKT     &trans             &trans       &kp RBKT     &kp APOS     &kp NUBS     &kp NUHS
                 &kp LGUI     &kp LALT     &kp LCTRL    &kp LSHFT    &trans             &trans       &kp RSHFT    &kp RCTRL    &kp LALT     &kp RGUI
                                                        &trans       &trans             &trans       &trans
             >;
         };
-
         // Layer 2: Shifted Numbers & Symbols
         raise_layer {
-            bindings = <
+            bindings = 
                 &kp LS(N1)   &kp LS(N2)   &kp LS(N3)   &kp LS(N4)   &kp LS(N5)         &kp LS(N6)   &kp LS(N7)   &kp LS(N8)   &kp LS(N9)   &kp LS(N0)
                 &kp LS(GRAVE) &kp LS(MINUS) &kp LS(EQUAL) &kp LS(LBKT) &trans            &trans       &kp LS(RBKT) &kp LS(APOS) &kp LS(NUBS) &kp LS(NUHS)
                 &kp LGUI     &kp LALT     &kp LCTRL    &kp LSHFT    &trans             &trans       &kp RSHFT    &kp RCTRL    &kp LALT     &kp RGUI
                                                        &trans       &trans             &trans       &trans
             >;
         };
-
         // Layer 3: Function Keys & Navigation
         function_layer {
-            bindings = <
+            bindings = 
                 &kp F1       &kp F2       &kp F3       &kp F4       &trans             &kp HOME     &kp PG_DN    &kp PG_UP    &kp END      &kp INS
                 &kp F5       &kp F6       &kp F7       &kp F8       &trans             &kp LEFT     &kp DOWN     &kp UP       &kp RIGHT    &kp DEL
                 &kp F9       &kp F10      &kp F11      &kp F12      &trans             &trans       &kp RSHFT    &kp RCTRL    &kp LALT     &kp RGUI
                                                        &trans       &trans             &trans       &trans
             >;
         };
-
         // Layer 4: Media Controls & Mouse
         media_layer {
-            bindings = <
+            bindings = 
                 &kp C_PREV   &kp C_PP     &kp C_NEXT   &kp C_STOP   &trans             &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP &msc SCRL_RIGHT &mkp LCLK
                 &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP &kp C_BRI_DN &kp C_BRI_UP       &mmv MOVE_LEFT &mmv MOVE_DOWN &mmv MOVE_UP &mmv MOVE_RIGHT &mkp MCLK
                 &trans       &trans       &trans       &trans       &trans             &trans       &trans       &trans       &trans       &mkp RCLK
                                                        &trans       &trans             &trans       &trans
             >;
         };
-
-        // Layer 5: Stenography
-        steno_layer {
-            bindings = <
-                &kp N1       &kp N2       &kp N3       &kp N4       &kp N5             &kp N6       &kp N7       &kp N8       &kp N9       &kp N0
-                &kp Q        &kp W        &kp E        &kp R        &kp T              &kp U        &kp I        &kp O        &kp P        &kp LBKT
-                &kp A        &kp S        &kp D        &kp F        &kp G              &kp K        &kp K        &kp L        &kp SEMI     &kp APOS
-                                                       &kp C        &kp V              &kp N        &kp M
+        // Layer 5: Norman alpha layout
+        norman_layer {
+            bindings = 
+                &td_q        &kp W        &kp D        &kp F        &kp K              &kp J        &kp U        &kp R        &kp L        &kp SEMI
+                &mt LGUI A   &mt LALT S   &mt LCTRL E  &mt LSHFT T  &kp G              &kp Y        &mt RSHFT N  &mt RCTRL I  &mt LALT O   &mt RGUI H
+                &kp Z        &kp X        &kp C        &kp V        &kp B              &kp P        &kp M        &kp COMMA    &kp DOT      &kp FSLH
+                                                       &lt 1 SPACE  &lt 2 TAB          &lt 3 RET    &lt 4 BSPC
             >;
         };
     };
