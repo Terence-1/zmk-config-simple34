@@ -1,0 +1,13 @@
+file_format: "1"
+id: simple34
+name: Simple34
+type: shield
+url: https://github.com/
+requires: [pro_micro]
+exposes: [pro_micro]
+features:
+  - keys
+  - split
+siblings:
+  - simple34_left
+  - simple34_right

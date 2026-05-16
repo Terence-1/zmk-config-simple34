@@ -1,0 +1,61 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+#define DEFAULT 0
+#define NAV     1
+#define SYM     2
+#define FUN     3
+
+/ {
+    behaviors {
+        hm: homerow_mods {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <150>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            bindings = <
+                &kp Q       &kp W       &kp E       &kp R       &kp T           &kp Y       &kp U       &kp I       &kp O       &kp P
+                &hm LGUI A  &hm LALT S  &hm LCTRL D &hm LSHFT F &kp G           &kp H       &hm RSHFT J &hm RCTRL K &hm RALT L  &hm RGUI SEMI
+                &kp Z       &kp X       &kp C       &kp V       &kp B           &kp N       &kp M       &kp COMMA   &kp DOT     &kp FSLH
+                                                    &lt NAV TAB &lt SYM SPACE   &lt SYM RET &lt NAV BSPC
+            >;
+        };
+
+        nav_layer {
+            bindings = <
+                &kp ESC     &kp N7      &kp N8      &kp N9      &kp N0          &kp HOME    &kp PG_DN   &kp PG_UP   &kp END     &kp DEL
+                &hm LGUI N1 &hm LALT N2 &hm LCTRL N3 &hm LSHFT N4 &kp N5       &kp LEFT    &hm RSHFT DOWN &hm RCTRL UP &hm RALT RIGHT &kp CAPS
+                &kp LC(Z)   &kp LC(X)   &kp LC(C)   &kp LC(V)   &kp LC(Y)      &kp INS     &kp TAB     &kp PSCRN   &kp SLCK    &kp PAUSE_BREAK
+                                                    &trans      &mo FUN         &mo FUN     &trans
+            >;
+        };
+
+        sym_layer {
+            bindings = <
+                &kp GRAVE   &kp AMPS    &kp ASTRK   &kp LPAR    &kp RPAR        &kp CARET   &kp LBRC    &kp RBRC    &kp PIPE    &kp TILDE
+                &kp EXCL    &kp AT      &kp HASH    &kp DLLR    &kp PRCNT       &kp MINUS   &kp LPAR    &kp RPAR    &kp EQUAL   &kp SQT
+                &kp BSLH    &trans      &trans      &kp PLUS    &kp UNDER       &kp UNDER   &kp LBKT    &kp RBKT    &kp DQT     &kp QMARK
+                                                    &mo FUN     &trans          &trans      &mo FUN
+            >;
+        };
+
+        fun_layer {
+            bindings = <
+                &kp F1      &kp F2      &kp F3      &kp F4      &kp F5          &kp F6      &kp F7      &kp F8      &kp F9      &kp F10
+                &kp F11     &kp F12     &trans      &trans      &trans          &trans      &trans      &trans      &trans      &trans
+                &bt BT_CLR  &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &trans     &trans      &trans      &trans      &trans
+                                                    &trans      &trans          &trans      &trans
+            >;
+        };
+    };
+};
