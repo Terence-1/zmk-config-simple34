@@ -162,4 +162,5 @@ static int layer_leds_central_init(void) {
     return 0;
 }
 
+#undef APPLICATION
 SYS_INIT(layer_leds_central_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
