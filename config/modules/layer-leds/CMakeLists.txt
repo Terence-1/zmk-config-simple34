@@ -1,0 +1,12 @@
+if(CONFIG_ZMK_LAYER_LED_INDICATORS)
+  zephyr_library_named(layer_leds)
+  zephyr_library_sources(src/layer_leds.c)
+  if(CONFIG_ZMK_LAYER_LED_SYNC AND NOT CONFIG_ZMK_SPLIT_BLE_ROLE_CENTRAL)
+    zephyr_library_sources(src/layer_leds_gatt.c)
+  endif()
+endif()
+
+if(CONFIG_ZMK_LAYER_LED_SYNC AND CONFIG_ZMK_SPLIT_BLE_ROLE_CENTRAL)
+  zephyr_library_named(layer_leds_central)
+  zephyr_library_sources(src/layer_leds_central.c)
+endif()

@@ -1,0 +1,27 @@
+description: |
+  GPIO LEDs driven by ZMK layer state.
+  Each entry in layer-state is a bitmask indicating which LEDs
+  are on when that layer is the highest active layer.
+  Bit 0 corresponds to the first GPIO in led-gpios, bit 1 to the second, etc.
+
+compatible: "zmk,layer-led-indicators"
+
+properties:
+  led-gpios:
+    type: phandle-array
+    required: true
+    description: |
+      Array of GPIO specs for each LED output.
+
+  layer-state:
+    type: array
+    required: true
+    description: |
+      Array of bitmasks, one per layer index (starting at layer 0).
+      Each bitmask encodes which LEDs are on for that layer.
+      Example for 2 LEDs, 4 layers:
+        layer-state = <0x00 0x01 0x02 0x03>;
+        Layer 0: 0b00 -> both off
+        Layer 1: 0b01 -> LED0 on
+        Layer 2: 0b10 -> LED1 on
+        Layer 3: 0b11 -> both on

@@ -14,3 +14,21 @@
 		, <&pro_micro 21 GPIO_ACTIVE_HIGH>
 		;
 };
+
+/ {
+	layer_leds {
+		compatible = "zmk,layer-led-indicators";
+		led-gpios
+			= <&pro_micro 3 GPIO_ACTIVE_HIGH>
+			, <&pro_micro 4 GPIO_ACTIVE_HIGH>
+			, <&pro_micro 5 GPIO_ACTIVE_HIGH>
+			;
+		// bit0=outer(pin3), bit1=middle(pin4), bit2=inner(pin5)
+		// Layer 0: none
+		// Layer 1: none (left side)
+		// Layer 2: none (left side)
+		// Layer 3: right outer
+		// Layer 4: right middle
+		layer-state = <0x00 0x00 0x00 0x01 0x02>;
+	};
+};

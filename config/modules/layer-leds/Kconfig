@@ -1,0 +1,11 @@
+config ZMK_LAYER_LED_INDICATORS
+    bool "Layer LED indicators (GPIO)"
+    default y
+    depends on DT_HAS_ZMK_LAYER_LED_INDICATORS_ENABLED
+    depends on GPIO
+
+config ZMK_LAYER_LED_SYNC
+    bool "Sync layer state to split peripherals via BLE"
+    default y
+    depends on ZMK_SPLIT
+    depends on ZMK_BLE

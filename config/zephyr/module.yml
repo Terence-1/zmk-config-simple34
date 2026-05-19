@@ -1,0 +1,5 @@
+build:
+  cmake: modules/layer-leds
+  kconfig: modules/layer-leds/Kconfig
+  settings:
+    dts_root: modules/layer-leds
