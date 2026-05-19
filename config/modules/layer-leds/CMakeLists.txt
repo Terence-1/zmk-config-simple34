@@ -7,7 +7,5 @@ if(CONFIG_ZMK_LAYER_LED_INDICATORS)
 endif()
 
 if(CONFIG_ZMK_LAYER_LED_SYNC AND CONFIG_ZMK_SPLIT_BLE_ROLE_CENTRAL)
-  zephyr_library_named(layer_leds_central)
-  zephyr_library_sources(src/layer_leds_central.c)
-  zephyr_library_include_directories(${APPLICATION_SOURCE_DIR}/include)
+  target_sources(app PRIVATE src/layer_leds_central.c)
 endif()
