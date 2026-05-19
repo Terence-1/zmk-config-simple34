@@ -86,10 +86,23 @@ static void discovery_work_handler(struct k_work *work) {
     start_discovery(periph[idx].conn, idx);
 }
 
+static bool work_initialized;
+
+static void ensure_work_initialized(void) {
+    if (!work_initialized) {
+        for (int i = 0; i < MAX_PERIPHERALS; i++) {
+            k_work_init_delayable(&discovery_work[i], discovery_work_handler);
+        }
+        work_initialized = true;
+    }
+}
+
 static void connected_cb(struct bt_conn *conn, uint8_t err) {
     if (err) {
         return;
     }
+
+    ensure_work_initialized();
 
     for (int i = 0; i < MAX_PERIPHERALS; i++) {
         if (!periph[i].conn) {
@@ -154,13 +167,3 @@ static int layer_state_listener(const zmk_event_t *eh) {
 
 ZMK_LISTENER(layer_led_central, layer_state_listener);
 ZMK_SUBSCRIPTION(layer_led_central, zmk_layer_state_changed);
-
-static int layer_leds_central_init(void) {
-    for (int i = 0; i < MAX_PERIPHERALS; i++) {
-        k_work_init_delayable(&discovery_work[i], discovery_work_handler);
-    }
-    return 0;
-}
-
-#undef APPLICATION
-SYS_INIT(layer_leds_central_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
