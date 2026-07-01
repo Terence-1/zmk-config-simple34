@@ -20,9 +20,14 @@
 ---
 include:
   - board: nice_nano
+    shield: simple34_left_central
+    artifact-name: simple34_left_central
+  - board: nice_nano
     shield: simple34_left
+    artifact-name: simple34_left_peripheral
   - board: nice_nano
     shield: simple34_right
+    artifact-name: simple34_right_peripheral
   - board: nice_nano
     shield: simple34_dongle
   - board: nice_nano

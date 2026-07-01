@@ -10,4 +10,5 @@ features:
   - split
 siblings:
   - simple34_left
+  - simple34_left_central
   - simple34_right

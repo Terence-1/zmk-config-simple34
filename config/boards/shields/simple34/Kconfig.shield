@@ -6,3 +6,6 @@ config SHIELD_SIMPLE34_RIGHT
 
 config SHIELD_SIMPLE34_DONGLE
 	def_bool $(shields_list_contains,simple34_dongle)
+
+config SHIELD_SIMPLE34_LEFT_CENTRAL
+	def_bool $(shields_list_contains,simple34_left_central)
