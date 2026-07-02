@@ -161,6 +161,7 @@ static uint8_t compute_highest_layer(void) {
 
 static int layer_state_listener(const zmk_event_t *eh) {
     uint8_t layer = compute_highest_layer();
+    layer_leds_set_layer(layer);
     send_layer_to_peripherals(layer);
     return ZMK_EV_EVENT_BUBBLE;
 }
