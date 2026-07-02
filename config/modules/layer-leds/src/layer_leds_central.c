@@ -16,6 +16,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #define MAX_PERIPHERALS CONFIG_ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
 
 static struct bt_uuid_128 char_uuid = BT_UUID_INIT_128(LAYER_LED_CHAR_UUID);
+K_MUTEX_DEFINE(periph_mutex);
 
 struct peripheral_led {
     struct bt_conn *conn;
@@ -36,6 +37,15 @@ static int find_periph_slot(struct bt_conn *conn) {
     return -1;
 }
 
+static int find_free_slot(void) {
+    for (int i = 0; i < MAX_PERIPHERALS; i++) {
+        if (!periph[i].conn) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 static uint8_t discover_cb(struct bt_conn *conn,
                             const struct bt_gatt_attr *attr,
                             struct bt_gatt_discover_params *params) {
@@ -44,14 +54,19 @@ static uint8_t discover_cb(struct bt_conn *conn,
         return BT_GATT_ITER_STOP;
     }
 
+    k_mutex_lock(&periph_mutex, K_FOREVER);
+
     int idx = find_periph_slot(conn);
     if (idx < 0) {
+        k_mutex_unlock(&periph_mutex);
         return BT_GATT_ITER_STOP;
     }
 
     struct bt_gatt_chrc *chrc = (struct bt_gatt_chrc *)attr->user_data;
     periph[idx].handle = chrc->value_handle;
     periph[idx].discovered = true;
+
+    k_mutex_unlock(&periph_mutex);
 
     LOG_INF("Layer LED: found characteristic on peripheral %d (handle %u)",
             idx, periph[idx].handle);
@@ -79,11 +94,16 @@ static void discovery_work_handler(struct k_work *work) {
     if (idx < 0 || idx >= MAX_PERIPHERALS) {
         return;
     }
-    if (!periph[idx].conn) {
+
+    k_mutex_lock(&periph_mutex, K_FOREVER);
+    struct bt_conn *conn = periph[idx].conn;
+    k_mutex_unlock(&periph_mutex);
+
+    if (!conn) {
         return;
     }
 
-    start_discovery(periph[idx].conn, idx);
+    start_discovery(conn, idx);
 }
 
 static bool work_initialized;
@@ -103,22 +123,31 @@ static void connected_cb(struct bt_conn *conn, uint8_t err) {
     }
 
     ensure_work_initialized();
+    k_mutex_lock(&periph_mutex, K_FOREVER);
 
-    for (int i = 0; i < MAX_PERIPHERALS; i++) {
-        if (!periph[i].conn) {
-            periph[i].conn = bt_conn_ref(conn);
-            periph[i].discovered = false;
-            periph[i].handle = 0;
-            /* Delay discovery to avoid conflicting with ZMK's own
-             * split service discovery on the same connection. */
-            k_work_schedule(&discovery_work[i], K_SECONDS(2));
-            return;
-        }
+    if (find_periph_slot(conn) >= 0) {
+        k_mutex_unlock(&periph_mutex);
+        return;
     }
-    LOG_WRN("Layer LED: no free peripheral slot");
+
+    int idx = find_free_slot();
+    if (idx >= 0) {
+        periph[idx].conn = bt_conn_ref(conn);
+        periph[idx].discovered = false;
+        periph[idx].handle = 0;
+        /* Delay discovery to avoid conflicting with ZMK's own
+         * split service discovery on the same connection. */
+        k_work_schedule(&discovery_work[idx], K_SECONDS(2));
+    } else {
+        LOG_WRN("Layer LED: no free peripheral slot");
+    }
+
+    k_mutex_unlock(&periph_mutex);
 }
 
 static void disconnected_cb(struct bt_conn *conn, uint8_t reason) {
+    k_mutex_lock(&periph_mutex, K_FOREVER);
+
     int idx = find_periph_slot(conn);
     if (idx >= 0) {
         k_work_cancel_delayable(&discovery_work[idx]);
@@ -127,6 +156,8 @@ static void disconnected_cb(struct bt_conn *conn, uint8_t reason) {
         periph[idx].discovered = false;
         periph[idx].handle = 0;
     }
+
+    k_mutex_unlock(&periph_mutex);
 }
 
 BT_CONN_CB_DEFINE(layer_led_conn_cbs) = {
@@ -135,6 +166,8 @@ BT_CONN_CB_DEFINE(layer_led_conn_cbs) = {
 };
 
 static void send_layer_to_peripherals(uint8_t layer) {
+    k_mutex_lock(&periph_mutex, K_FOREVER);
+
     for (int i = 0; i < MAX_PERIPHERALS; i++) {
         if (!periph[i].conn || !periph[i].discovered) {
             continue;
@@ -147,6 +180,8 @@ static void send_layer_to_peripherals(uint8_t layer) {
             LOG_WRN("Layer LED: write to peripheral %d failed (err %d)", i, err);
         }
     }
+
+    k_mutex_unlock(&periph_mutex);
 }
 
 static uint8_t compute_highest_layer(void) {
