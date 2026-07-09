@@ -1,0 +1,12 @@
+if BOARD_EFOGTECH_DONGLE_1K
+
+config BOARD
+    default "efogtech_dongle_1k"
+
+config USB_NRFX
+    default y
+
+config USB_DEVICE_STACK
+    default y
+
+endif
