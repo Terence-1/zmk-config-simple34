@@ -1,0 +1,14 @@
+description: |
+  Key press that also toggles the home-row-mod inner LED on a split half.
+  Used as the hold binding of hold-tap HRMs.
+
+compatible: "zmk,behavior-hrm-key-press"
+
+include: one_param.yaml
+
+properties:
+  side:
+    type: int
+    required: true
+    description: |
+      Half that owns this HRM: 0 = left, 1 = right.

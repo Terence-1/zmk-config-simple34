@@ -20,11 +20,12 @@ static const struct gpio_dt_spec leds[NUM_LEDS] = {
 
 static const uint32_t layer_state_map[NUM_LAYERS] = DT_PROP(LAYER_LED_NODE, layer_state);
 
-void layer_leds_set_layer(uint8_t layer) {
+void layer_leds_apply(uint8_t layer, uint32_t extra_mask) {
     uint32_t mask = 0;
     if (layer < NUM_LAYERS) {
         mask = layer_state_map[layer];
     }
+    mask |= extra_mask;
     for (int i = 0; i < NUM_LEDS; i++) {
         gpio_pin_set_dt(&leds[i], (mask >> i) & 1);
     }

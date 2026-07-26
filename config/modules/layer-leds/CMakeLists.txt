@@ -6,6 +6,11 @@ if(CONFIG_ZMK_LAYER_LED_INDICATORS)
   endif()
 endif()
 
+# Keymap behaviors must link against ZMK app symbols (raise_zmk_keycode_state_changed).
+if(CONFIG_ZMK_KEYBOARD_NAME)
+  target_sources(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/behavior_hrm_key_press.c)
+endif()
+
 if(CONFIG_ZMK_LAYER_LED_SYNC AND CONFIG_ZMK_SPLIT_BLE_ROLE_CENTRAL)
-  target_sources(app PRIVATE src/layer_leds_central.c)
+  target_sources(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/layer_leds_central.c)
 endif()

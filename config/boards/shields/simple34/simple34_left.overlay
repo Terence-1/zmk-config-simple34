@@ -14,12 +14,14 @@
 / {
 	layer_leds {
 		compatible = "zmk,layer-led-indicators";
+		side = <0>;
 		led-gpios
 			= <&pro_micro 3 GPIO_ACTIVE_HIGH>
 			, <&pro_micro 4 GPIO_ACTIVE_HIGH>
 			, <&pro_micro 5 GPIO_ACTIVE_HIGH>
 			;
 		// bit0=outer(pin3), bit1=middle(pin4), bit2=inner(pin5)
+		// Inner (bit2) is OR'd on by HRM holds from the central — not used in layer-state.
 		// Layer 0: none
 		// Layer 1: left middle
 		// Layer 2: left outer

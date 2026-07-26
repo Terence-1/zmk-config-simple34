@@ -2,6 +2,7 @@
 #include <zephyr/bluetooth/conn.h>
 #include <zephyr/bluetooth/gatt.h>
 #include <zephyr/bluetooth/uuid.h>
+#include <zephyr/devicetree.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
@@ -14,6 +15,7 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define MAX_PERIPHERALS CONFIG_ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+#define HRM_SIDES 2
 
 static struct bt_uuid_128 char_uuid = BT_UUID_INIT_128(LAYER_LED_CHAR_UUID);
 K_MUTEX_DEFINE(periph_mutex);
@@ -27,6 +29,7 @@ struct peripheral_led {
 static struct peripheral_led periph[MAX_PERIPHERALS];
 static struct bt_gatt_discover_params disc_params[MAX_PERIPHERALS];
 static struct k_work_delayable discovery_work[MAX_PERIPHERALS];
+static uint8_t hrm_hold_count[HRM_SIDES];
 
 static int find_periph_slot(struct bt_conn *conn) {
     for (int i = 0; i < MAX_PERIPHERALS; i++) {
@@ -46,9 +49,10 @@ static int find_free_slot(void) {
     return -1;
 }
 
-static uint8_t discover_cb(struct bt_conn *conn,
-                            const struct bt_gatt_attr *attr,
-                            struct bt_gatt_discover_params *params) {
+static uint8_t discover_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                           struct bt_gatt_discover_params *params) {
+    ARG_UNUSED(params);
+
     if (!attr) {
         LOG_DBG("Layer LED: discovery complete, no characteristic found");
         return BT_GATT_ITER_STOP;
@@ -68,8 +72,8 @@ static uint8_t discover_cb(struct bt_conn *conn,
 
     k_mutex_unlock(&periph_mutex);
 
-    LOG_INF("Layer LED: found characteristic on peripheral %d (handle %u)",
-            idx, periph[idx].handle);
+    LOG_INF("Layer LED: found characteristic on peripheral %d (handle %u)", idx,
+            periph[idx].handle);
 
     return BT_GATT_ITER_STOP;
 }
@@ -146,6 +150,7 @@ static void connected_cb(struct bt_conn *conn, uint8_t err) {
 }
 
 static void disconnected_cb(struct bt_conn *conn, uint8_t reason) {
+    ARG_UNUSED(reason);
     k_mutex_lock(&periph_mutex, K_FOREVER);
 
     int idx = find_periph_slot(conn);
@@ -165,25 +170,6 @@ BT_CONN_CB_DEFINE(layer_led_conn_cbs) = {
     .disconnected = disconnected_cb,
 };
 
-static void send_layer_to_peripherals(uint8_t layer) {
-    k_mutex_lock(&periph_mutex, K_FOREVER);
-
-    for (int i = 0; i < MAX_PERIPHERALS; i++) {
-        if (!periph[i].conn || !periph[i].discovered) {
-            continue;
-        }
-        int err = bt_gatt_write_without_response(periph[i].conn,
-                                                  periph[i].handle,
-                                                  &layer, sizeof(layer),
-                                                  false);
-        if (err) {
-            LOG_WRN("Layer LED: write to peripheral %d failed (err %d)", i, err);
-        }
-    }
-
-    k_mutex_unlock(&periph_mutex);
-}
-
 static uint8_t compute_highest_layer(void) {
     uint8_t highest = 0;
     for (uint8_t i = 0; i < 32; i++) {
@@ -194,12 +180,68 @@ static uint8_t compute_highest_layer(void) {
     return highest;
 }
 
-static int layer_state_listener(const zmk_event_t *eh) {
+static void build_msg(uint8_t layer, uint8_t msg[LAYER_LED_MSG_LEN]) {
+    msg[0] = layer;
+    msg[1] = hrm_hold_count[0] > 0 ? (uint8_t)LAYER_LED_INNER_MASK : 0;
+    msg[2] = hrm_hold_count[1] > 0 ? (uint8_t)LAYER_LED_INNER_MASK : 0;
+}
+
+static void send_msg_to_peripherals(const uint8_t msg[LAYER_LED_MSG_LEN]) {
+    k_mutex_lock(&periph_mutex, K_FOREVER);
+
+    for (int i = 0; i < MAX_PERIPHERALS; i++) {
+        if (!periph[i].conn || !periph[i].discovered) {
+            continue;
+        }
+        int err = bt_gatt_write_without_response(periph[i].conn, periph[i].handle, msg,
+                                                 LAYER_LED_MSG_LEN, false);
+        if (err) {
+            LOG_WRN("Layer LED: write to peripheral %d failed (err %d)", i, err);
+        }
+    }
+
+    k_mutex_unlock(&periph_mutex);
+}
+
+static void refresh_all(void) {
     uint8_t layer = compute_highest_layer();
-#ifdef CONFIG_ZMK_LAYER_LED_INDICATORS
-    layer_leds_set_layer(layer);
+    uint8_t msg[LAYER_LED_MSG_LEN];
+    build_msg(layer, msg);
+
+#if IS_ENABLED(CONFIG_ZMK_LAYER_LED_INDICATORS)
+    /* left_central: local LEDs use the half's side from DT. */
+#define LOCAL_LAYER_LED_NODE DT_INST(0, zmk_layer_led_indicators)
+    uint8_t local_side = DT_PROP(LOCAL_LAYER_LED_NODE, side);
+    uint32_t extra = 0;
+    if (local_side < HRM_SIDES) {
+        extra = msg[1 + local_side];
+    }
+    layer_leds_apply(layer, extra);
 #endif
-    send_layer_to_peripherals(layer);
+
+    send_msg_to_peripherals(msg);
+}
+
+void layer_leds_hrm_changed(uint8_t side, bool active) {
+    if (side >= HRM_SIDES) {
+        return;
+    }
+
+    if (active) {
+        if (hrm_hold_count[side] < UINT8_MAX) {
+            hrm_hold_count[side]++;
+        }
+    } else if (hrm_hold_count[side] > 0) {
+        hrm_hold_count[side]--;
+    }
+
+    LOG_DBG("HRM side %u count %u", side, hrm_hold_count[side]);
+    refresh_all();
+}
+
+static int layer_state_listener(const zmk_event_t *eh) {
+    ARG_UNUSED(eh);
+    refresh_all();
     return ZMK_EV_EVENT_BUBBLE;
 }
 

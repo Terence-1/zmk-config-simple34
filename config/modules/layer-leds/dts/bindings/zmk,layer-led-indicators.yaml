@@ -13,6 +13,13 @@ properties:
     description: |
       Array of GPIO specs for each LED output.
 
+  side:
+    type: int
+    required: true
+    description: |
+      Split half this node belongs to: 0 = left, 1 = right.
+      Used when syncing HRM inner-LED extras over BLE.
+
   layer-state:
     type: array
     required: true
