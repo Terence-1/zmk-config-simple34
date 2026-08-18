@@ -32,6 +32,12 @@
  */
 void layer_leds_apply(uint8_t layer, uint32_t extra_mask);
 
+/**
+ * Flash all LEDs on boot/wake, then restore the current layer state.
+ * No-op unless CONFIG_ZMK_LAYER_LED_BOOT_BLINK is enabled.
+ */
+void layer_leds_wake_blink(void);
+
 /** Convenience: layer only, no extra bits. */
 static inline void layer_leds_set_layer(uint8_t layer) {
     layer_leds_apply(layer, 0);

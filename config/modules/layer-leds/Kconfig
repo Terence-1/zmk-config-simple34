@@ -9,3 +9,20 @@ config ZMK_LAYER_LED_SYNC
     default y
     depends on ZMK_SPLIT
     depends on ZMK_BLE
+
+config ZMK_LAYER_LED_BOOT_BLINK
+    bool "Flash LEDs on power-on / wake from sleep"
+    default y
+    depends on ZMK_LAYER_LED_INDICATORS
+
+config ZMK_LAYER_LED_BLINK_COUNT
+    int "Number of power-on/wake LED blinks"
+    default 3
+    range 1 10
+    depends on ZMK_LAYER_LED_BOOT_BLINK
+
+config ZMK_LAYER_LED_BLINK_DELAY_MS
+    int "Delay between power-on/wake blink phases (ms)"
+    default 90
+    range 10 1000
+    depends on ZMK_LAYER_LED_BOOT_BLINK
